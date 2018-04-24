@@ -1,0 +1,24 @@
+{
+    "name": "php-angular/thinkphp",
+    "description": "php angular view engine for thinkphp",
+    "homepage": "http://zhaishuaigan.cn/php-angular",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "玩具机器人",
+            "email": "zhaishuaigan@qq.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/php-angular/thinkphp/issues"
+    },
+    "require": {
+        "php": ">=5.4.3",
+        "php-angular/php-angular": "2.0.*"
+    },
+    "autoload": {
+        "classmap": {
+            "think\\view\\driver\\Angular": "src/Driver.php"
+        }
+    }
+}
