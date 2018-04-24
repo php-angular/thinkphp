@@ -11,8 +11,8 @@
 namespace think\view\driver;
 
 use PHPAngular\Angular as AngularTpl;
-use think\App;
-use think\Request;
+use think\facade\Env;
+use think\facade\Request;
 use think\template\driver\File as Storage;
 
 class Angular
@@ -24,17 +24,16 @@ class Angular
 
     public function __construct($config = [])
     {
-        $default = [
-            'debug'            => App::$debug, // 是否开启调试模式
-            'tpl_path'         => App::$modulePath . 'view' . DS, // 模板目录
+        $default      = [
+            'debug'            => false, // 是否开启调试模式
+            'tpl_path'         => Env::get('module_path') . 'view/', // 模板目录
             'tpl_suffix'       => '.html', // 模板后缀
-            'tpl_cache_path'   => RUNTIME_PATH . 'temp' . DS, // 模板缓存目录
+            'tpl_cache_path'   => Env::get('runtime_path') . 'temp/', // 模板缓存目录
             'tpl_cache_suffix' => '.php', // 模板缓存文件后缀
             'directive_prefix' => 'php-', // 指令前缀
             'directive_max'    => 10000, // 指令的最大解析次数
         ];
-
-        $this->config   = array_merge($default, $config);
+        $this->config = array_merge($default, $config);
         // 初始化模板编译存储器
         $this->storage = new Storage();
     }
@@ -42,8 +41,8 @@ class Angular
     /**
      * 配置模板引擎
      * @access private
-     * @param string|array  $name 参数名
-     * @param mixed         $value 参数值
+     * @param string|array $name  参数名
+     * @param mixed        $value 参数值
      * @return void
      */
     public function config($name, $value = null)
@@ -60,8 +59,8 @@ class Angular
     /**
      * 获取模版运行结果
      * @param string $template 模版地址
-     * @param array $data 模版数据
-     * @param array $config 配置
+     * @param array  $data     模版数据
+     * @param array  $config   配置
      * @return string
      */
     public function fetch($template, $data = [], $config = [])
@@ -69,8 +68,7 @@ class Angular
         $this->template = new AngularTpl($this->config);
         // 处理模版地址
         $template = $this->parseTemplatePath($template);
-        $request  = Request::instance();
-        $module   = $request->module() ?: 'default';
+        $module   = Request::module() ?: 'default';
         // 根据模版文件名定位缓存文件
         $tpl_cache_file = $this->config['tpl_cache_path'] . 'angular/' . $module . '/' . md5($template) . '.php';
         if ($this->config['debug'] || !is_file($tpl_cache_file) || !$this->storage->check($tpl_cache_file, 0)) {
@@ -84,8 +82,8 @@ class Angular
     /**
      * fetch的别名
      * @param string $template 模版地址
-     * @param array $data 模版数据
-     * @param array $config 配置
+     * @param array  $data     模版数据
+     * @param array  $config   配置
      * @return string
      */
     public function display($template, $data = [], $config = [])
@@ -100,20 +98,21 @@ class Angular
      */
     public function parseTemplatePath($template = '')
     {
-        $request    = Request::instance();
-        $controller = strtolower($request->controller());
-        $action     = $request->action();
+        $controller = strtolower(Request::controller());
+        $action     = Request::action();
         if (!$template) {
             // 没有传模版名
-            $template = $controller . DS . $action;
-            $template = str_replace('.', DS, $template);
+            $template = $controller . '/' . $action;
+            $template = str_replace('.', '/', $template);
             return $template;
         } elseif (strpos($template, '/') === false) {
             // 只传了操作名
-            $template = $controller . DS . $template;
-            $template = str_replace('.', DS, $template);
+            $template = $controller . '/' . $template;
+            $template = str_replace('.', '/', $template);
             return $template;
         }
+
+        dump($template);
         // 默认原样返回
         return $template;
     }

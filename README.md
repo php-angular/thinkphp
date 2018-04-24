@@ -6,16 +6,25 @@
 
 ## 2. 安装驱动  
 ```
-composer require php-angular/thinkphp
+composer require php-angular/thinkphp:2.0.*
 ```
 
 ## 3. 修改或添加项目配置文件的模板引擎为Angular  
 
-// config.php
+// 修改配置文件 /config/template.php
 ```
-'template' => [
-    'type' => 'Angular',
-],
+use think\facade\Env;
+
+return [
+    // 模板引擎类型 支持 php think Angular 支持扩展
+    'type'             => 'Angular',
+    'debug'            => true, // 是否开启调试模式
+    'tpl_suffix'       => '.html', // 模板后缀
+    'tpl_cache_suffix' => '.php', // 模板缓存文件后缀
+    'directive_prefix' => 'php-', // 指令前缀
+    'directive_max'    => 10000, // 指令的最大解析次数
+];
+
 ```
 
 ## 资源教程
